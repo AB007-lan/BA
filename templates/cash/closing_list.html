@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% load hissab %}
+{% block title %}Clôtures{% endblock %}
+{% block content %}
+{% include "cash/_tabs.html" with heading="Clôtures de caisse" active="closing" %}
+<p><a class="btn" href="{% url 'closing_create' %}">+ Clôturer une journée</a></p>
+<div class="tablewrap"><table><tr><th>Date</th><th class="n">Ouverture</th><th class="n">Ventes espèces</th><th class="n">Factures payées espèces</th><th class="n">Dépenses espèces</th><th class="n">Apports/retraits</th><th class="n">Théorique</th><th class="n">Compté</th><th class="n">Écart</th><th></th></tr>
+{% for c, f in rows %}<tr><td>{{ c.date|date:"d/m/Y" }}</td><td class="n">{{ f.opening|mru }}</td><td class="n">{{ f.cash_sales|mru }}</td><td class="n">{{ f.cash_invoice_payments|mru }}</td>
+<td class="n">{{ f.cash_expenses|mru }}</td><td class="n">{{ f.movements|mru }}</td><td class="n"><strong>{{ f.theoretical|mru }}</strong></td><td class="n">{{ c.counted_cash|mru }}</td>
+<td class="n {% if f.difference %}bad{% else %}good{% endif %}">{{ f.difference|mru }}</td>
+<td><a href="{% url 'closing_update' c.pk %}">Modifier</a>{% if request.is_owner %} · <a href="{% url 'closing_delete' c.pk %}">Supprimer</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="10" class="empty">Aucune clôture. Le soir, comptez les espèces et saisissez le montant.</td></tr>{% endfor %}</table></div>
+{% include "core/pagination.html" %}
+<p class="muted">Seules les opérations en espèces comptent dans le tiroir. Ouverture = espèces comptées à la clôture précédente (ou fond de caisse de départ).</p>
+{% endblock %}

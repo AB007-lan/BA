@@ -1,0 +1,6 @@
+<div class="row"><h1>{{ heading }}</h1><div>
+<a class="btn {% if active != 'sale' %}light{% endif %} sm" href="{% url 'sale_list' %}">Ventes</a>
+<a class="btn {% if active != 'expense' %}light{% endif %} sm" href="{% url 'expense_list' %}">Dépenses</a>
+<a class="btn {% if active != 'cashmovement' %}light{% endif %} sm" href="{% url 'cashmovement_list' %}">Apports / retraits</a>
+<a class="btn {% if active != 'closing' %}light{% endif %} sm" href="{% url 'closing_list' %}">Clôtures</a>
+</div></div>

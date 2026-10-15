@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Supprimer</h1>
+<div class="card"><p>Confirmez-vous la suppression de <strong>{{ object }}</strong> ? Cette action est définitive.</p>
+<form method="post">{% csrf_token %}<button class="btn danger">Supprimer</button> <a class="btn light" href="javascript:history.back()">Annuler</a></form></div>
+{% endblock %}

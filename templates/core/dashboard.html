@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% load hissab %}
+{% block title %}Tableau de bord{% endblock %}
+{% block content %}
+<div class="row"><h1>Tableau de bord</h1>
+<form class="search" method="get"><input type="date" name="du" value="{{ start|date:'Y-m-d' }}" aria-label="Du"><input type="date" name="au" value="{{ end|date:'Y-m-d' }}" aria-label="Au"><button class="btn sm">Afficher</button></form></div>
+{% if is_new %}<div class="card" style="margin-bottom:12px"><h2>Bien démarrer</h2><ol>
+<li><a href="{% url 'org_settings' %}">Complétez les paramètres</a> (NIF, numéros Bankily/Masrvi, TVA, fond de caisse).</li>
+<li><a href="{% url 'product_create' %}">Ajoutez vos produits</a> avec leur stock de départ.</li>
+<li>Enregistrez vos <a href="{% url 'sale_create' %}">ventes</a> : le stock se met à jour tout seul.</li>
+<li>Le soir, faites la <a href="{% url 'closing_create' %}">clôture de caisse</a>.</li></ol></div>{% endif %}
+<div class="grid">
+  <div class="card kpi"><div class="l">Ventes caisse</div><div class="v">{{ cash_sales|mru }}</div></div>
+  <div class="card kpi"><div class="l">Factures encaissées</div><div class="v">{{ collected|mru }}</div></div>
+  <div class="card kpi"><div class="l">Dépenses</div><div class="v">{{ spent|mru }}</div></div>
+  <div class="card kpi"><div class="l">Résultat de trésorerie</div><div class="v {% if result < 0 %}bad{% else %}good{% endif %}">{{ result|mru }}</div></div>
+</div>
+<div class="grid" style="margin-top:12px">
+  <div class="card kpi"><div class="l">Facturé sur la période (TTC)</div><div class="v">{{ invoiced|mru }}</div></div>
+  <div class="card kpi"><div class="l">Reste à encaisser (total)</div><div class="v">{{ receivable|mru }}</div></div>
+  <div class="card kpi"><div class="l">Dont en retard ({{ late_count }} facture{{ late_count|pluralize }})</div><div class="v {% if late_amount %}bad{% endif %}">{{ late_amount|mru }}</div></div>
+  <div class="card kpi"><div class="l">Valeur du stock (achat)</div><div class="v">{{ stock_value|mru }}</div></div>
+</div>
+<div class="grid2">
+  <div class="card"><h2>Produits à surveiller ({{ alert_count }})</h2>
+  {% if alerts %}<table>{% for p in alerts %}<tr><td>{{ p.name }}</td><td class="n">{{ p.stock|mru }}</td><td><span class="tag {{ p.status }}">{% if p.status == 'rupture' %}Rupture{% else %}À commander{% endif %}</span></td></tr>{% endfor %}</table>
+  {% else %}<p class="muted">Aucune alerte de stock.</p>{% endif %}</div>
+  <div class="card"><h2>Encaissements par mode</h2>
+  {% if by_method %}<table>{% for label, amount in by_method %}<tr><td>{{ label }}</td><td class="n">{{ amount|mru }}</td></tr>{% endfor %}</table>
+  {% else %}<p class="muted">Aucun encaissement sur la période.</p>{% endif %}</div>
+  <div class="card"><h2>Dernière clôture de caisse</h2>
+  {% if last_closing %}<p>{{ last_closing.date|date:"d/m/Y" }} — théorique {{ last_closing_figures.theoretical|mru }}, compté {{ last_closing.counted_cash|mru }}</p>
+  <p>Écart : <span class="{% if last_closing_figures.difference %}bad{% else %}good{% endif %}">{{ last_closing_figures.difference|mru }}</span></p>
+  {% else %}<p class="muted">Aucune clôture enregistrée.</p>{% endif %}
+  <a class="btn sm" href="{% url 'closing_create' %}">Clôturer la caisse</a></div>
+</div>
+<p class="muted" style="margin-top:12px">Montants en {{ request.org.currency }}. Résultat de trésorerie = ventes caisse + factures encaissées − dépenses.</p>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Inscription{% endblock %}
+{% block content %}
+<div class="auth card"><h1>Créer mon entreprise</h1>
+<p class="muted">Stock, factures et caisse : vos chiffres, clairs chaque soir.</p>
+<form method="post" class="f" novalidate>{% csrf_token %}{{ form.as_p }}<button class="btn">Créer mon compte</button></form>
+<p class="muted">Déjà inscrit ? <a href="{% url 'login' %}">Se connecter</a></p></div>
+{% endblock %}

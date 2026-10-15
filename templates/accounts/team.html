@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Équipe{% endblock %}
+{% block content %}
+<div class="row"><h1>Équipe</h1><a class="btn light" href="{% url 'org_settings' %}">Paramètres de l'entreprise</a></div>
+<div class="grid2">
+<div class="tablewrap"><table><tr><th>Identifiant</th><th>Rôle</th></tr>
+{% for m in members %}<tr><td>{{ m.user.username }}</td><td>{{ m.get_role_display }}</td></tr>{% endfor %}</table></div>
+<div class="card"><h2>Ajouter un employé</h2><p class="muted">Un employé saisit ventes, factures et stock, mais ne peut ni supprimer ni modifier les paramètres.</p>
+<form method="post" class="f" novalidate>{% csrf_token %}{{ form.as_p }}<button class="btn">Ajouter</button></form></div>
+</div>
+{% endblock %}

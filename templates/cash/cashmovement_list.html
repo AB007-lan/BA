@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% load hissab %}
+{% block title %}Apports et retraits{% endblock %}
+{% block content %}
+{% include "cash/_tabs.html" with heading="Apports et retraits d'espèces" active="cashmovement" %}
+<p><a class="btn" href="{% url 'cashmovement_create' %}">+ Mouvement</a></p>
+<div class="tablewrap"><table><tr><th>Date</th><th>Type</th><th class="n">Effet sur la caisse</th><th>Motif</th><th></th></tr>
+{% for m in object_list %}<tr><td>{{ m.date|date:"d/m/Y" }}</td><td>{{ m.get_kind_display }}</td><td class="n">{{ m.signed_amount|mru }}</td><td>{{ m.note }}</td>
+<td><a href="{% url 'cashmovement_update' m.pk %}">Modifier</a>{% if request.is_owner %} · <a href="{% url 'cashmovement_delete' m.pk %}">Supprimer</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="5" class="empty">Aucun mouvement.</td></tr>{% endfor %}</table></div>
+{% include "core/pagination.html" %}
+{% endblock %}

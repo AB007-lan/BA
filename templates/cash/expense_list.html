@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% load hissab %}
+{% block title %}Dépenses{% endblock %}
+{% block content %}
+{% include "cash/_tabs.html" with heading="Dépenses" active="expense" %}
+<p><a class="btn" href="{% url 'expense_create' %}">+ Dépense</a></p>
+<div class="tablewrap"><table><tr><th>Date</th><th>Catégorie</th><th>Libellé</th><th class="n">Montant</th><th>Mode</th><th>Justificatif</th><th></th></tr>
+{% for e in object_list %}<tr><td>{{ e.date|date:"d/m/Y" }}</td><td>{{ e.get_category_display }}</td><td>{{ e.label }}</td><td class="n">{{ e.amount|mru }}</td><td>{{ e.get_method_display }}</td><td>{{ e.receipt_ref }}</td>
+<td><a href="{% url 'expense_update' e.pk %}">Modifier</a>{% if request.is_owner %} · <a href="{% url 'expense_delete' e.pk %}">Supprimer</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="7" class="empty">Aucune dépense.</td></tr>{% endfor %}</table></div>
+{% include "core/pagination.html" %}
+{% endblock %}

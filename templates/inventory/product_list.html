@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% load hissab %}
+{% block title %}Produits{% endblock %}
+{% block content %}
+<div class="row"><h1>Produits</h1><div><a class="btn light" href="{% url 'movement_list' %}">Mouvements</a> <a class="btn" href="{% url 'product_create' %}">+ Produit</a></div></div>
+<form class="search" method="get" style="margin-bottom:12px"><input name="q" value="{{ request.GET.q }}" placeholder="Rechercher"><button class="btn sm light">OK</button></form>
+<div class="tablewrap"><table>
+<tr><th>Code</th><th>Désignation</th><th>Catégorie</th><th class="n">Prix vente</th><th class="n">Stock</th><th>Statut</th><th></th></tr>
+{% for p in object_list %}<tr><td>{{ p.code }}</td><td>{{ p.name }}{% if not p.is_active %} <span class="muted">(inactif)</span>{% endif %}</td><td>{{ p.category }}</td>
+<td class="n">{{ p.sale_price|mru }}</td><td class="n">{{ p.stock|mru }} {{ p.unit }}</td>
+<td><span class="tag {{ p.status }}">{% if p.status == 'ok' %}OK{% elif p.status == 'rupture' %}Rupture{% else %}À commander{% endif %}</span></td>
+<td><a href="{% url 'product_update' p.pk %}">Modifier</a>{% if request.is_owner %} · <a href="{% url 'product_delete' p.pk %}">Supprimer</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="7" class="empty">Aucun produit. <a href="{% url 'product_create' %}">Ajoutez le premier.</a></td></tr>{% endfor %}
+</table></div>
+{% include "core/pagination.html" %}
+{% endblock %}

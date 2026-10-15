@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>{{ title }}{% if object %} {{ object.number }}{% endif %}</h1>
+<form method="post" class="f" novalidate>{% csrf_token %}
+<div class="card" style="margin-bottom:12px">{{ form.as_p }}</div>
+<div class="card"><h2>Lignes</h2><p class="muted">Article vide = ligne libre (désignation et prix obligatoires). Prix vide = prix du catalogue. TVA vide = taux par défaut. Remise : 0,10 pour 10 %. Une facture ne retire pas le stock : si vous livrez de la marchandise facturée, enregistrez une sortie dans Stock.</p>
+{{ lines.management_form }}{% if lines.non_form_errors %}<ul class="errorlist">{% for e in lines.non_form_errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+<div class="tablewrap lines"><table><tr><th>Article</th><th>Désignation</th><th>Qté</th><th>Prix HT</th><th>Remise</th><th>TVA</th><th>Suppr.</th></tr>
+{% for lf in lines %}{% if lf.non_field_errors %}<tr><td colspan="7"><ul class="errorlist">{% for e in lf.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul></td></tr>{% endif %}
+<tr>{% for hidden in lf.hidden_fields %}{{ hidden }}{% endfor %}
+<td>{{ lf.product }}</td><td>{{ lf.description }}</td><td>{{ lf.quantity }}{{ lf.quantity.errors }}</td><td>{{ lf.unit_price }}</td><td>{{ lf.discount_rate }}</td><td>{{ lf.vat_rate }}</td><td>{% if lf.instance.pk %}{{ lf.DELETE }}{% endif %}</td></tr>{% endfor %}
+</table></div></div>
+<p style="margin-top:12px"><button class="btn">Enregistrer la facture</button> <a class="btn light" href="{% url 'invoice_list' %}">Annuler</a></p>
+</form>
+{% endblock %}

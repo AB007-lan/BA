@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% load hissab %}
+{% block title %}Facture {{ object.number }}{% endblock %}
+{% block content %}
+{% with org=request.org inv=object %}
+<div class="row noprint"><a href="{% url 'invoice_list' %}">← Factures</a>
+<div><span class="tag {{ inv.status }}">{{ inv.status_label }}</span>
+<a class="btn light" href="{% url 'invoice_update' inv.pk %}">Modifier</a>
+{% if inv.balance > 0 %}<a class="btn light" href="{% url 'payment_create' %}?facture={{ inv.pk }}">Encaisser</a>{% endif %}
+<button class="btn" onclick="window.print()">Imprimer / PDF</button>
+{% if request.is_owner %}<a class="btn light" href="{% url 'invoice_delete' inv.pk %}">Supprimer</a>{% endif %}</div></div>
+<div class="inv">
+<div class="head"><div><strong style="font-size:18px;color:var(--navy)">{{ org.name }}</strong><br><span class="muted">{% if org.activity %}{{ org.activity }}<br>{% endif %}{% if org.address %}{{ org.address }}<br>{% endif %}
+{% if org.phone %}Tél. {{ org.phone }}{% endif %}{% if org.email %} · {{ org.email }}{% endif %}{% if org.phone or org.email %}<br>{% endif %}{% if org.nif %}NIF {{ org.nif }}{% endif %}{% if org.rc %} · RC {{ org.rc }}{% endif %}</span></div>
+<div style="text-align:right"><h2>FACTURE</h2>N° <strong>{{ inv.number }}</strong><br>Date : {{ inv.date|date:"d/m/Y" }}<br>Échéance : {{ inv.due_date|date:"d/m/Y" }}</div></div>
+<div class="head" style="margin-top:24px"><div><span class="muted" style="font-size:12px">FACTURÉ À</span><br><strong>{{ inv.customer.name }}</strong><br>{% if inv.customer.address %}{{ inv.customer.address }}<br>{% endif %}
+{% if inv.customer.phone %}Tél. {{ inv.customer.phone }}<br>{% endif %}{% if inv.customer.nif %}NIF {{ inv.customer.nif }}{% endif %}</div>
+{% if inv.subject %}<div><span class="muted" style="font-size:12px">OBJET</span><br>{{ inv.subject }}</div>{% endif %}</div>
+<table style="margin-top:24px"><tr><th>Désignation</th><th class="n">Qté</th><th class="n">Prix unit. HT</th><th class="n">Remise</th><th class="n">TVA</th><th class="n">Montant HT</th></tr>
+{% for l in inv.lines.all %}<tr><td style="white-space:normal">{{ l.description }}</td><td class="n">{{ l.quantity|mru }}</td><td class="n">{{ l.unit_price|mru }}</td>
+<td class="n">{% if l.discount_rate %}{{ l.discount_rate|pct }}{% endif %}</td><td class="n">{{ l.vat_rate|pct }}</td><td class="n">{{ l.amount_ht|mru }}</td></tr>{% endfor %}</table>
+<div class="head" style="margin-top:16px"><div class="muted" style="font-size:13px">
+{% if org.bankily %}Bankily : {{ org.bankily }}<br>{% endif %}{% if org.masrvi %}Masrvi / Sedad : {{ org.masrvi }}<br>{% endif %}{% if org.bank_details %}Virement : {{ org.bank_details }}{% endif %}</div>
+<table class="tot" style="width:auto"><tr><td>Total HT</td><td class="n">{{ inv.total_ht|mru }}</td></tr><tr><td>TVA</td><td class="n">{{ inv.total_vat|mru }}</td></tr>
+<tr class="big"><td>Total TTC</td><td class="n">{{ inv.total_ttc|mru }} {{ org.currency }}</td></tr><tr><td>Déjà payé</td><td class="n">{{ inv.amount_paid|mru }}</td></tr>
+<tr class="big"><td>Reste à payer</td><td class="n">{{ inv.balance|mru }} {{ org.currency }}</td></tr></table></div>
+{% if org.invoice_footer %}<p class="muted" style="margin-top:24px;font-style:italic">{{ org.invoice_footer }}</p>{% endif %}
+</div>
+{% if inv.payments.all %}<div class="card noprint" style="max-width:820px;margin:12px auto"><h2>Paiements reçus</h2><table>
+{% for p in inv.payments.all %}<tr><td>{{ p.date|date:"d/m/Y" }}</td><td>{{ p.get_method_display }}</td><td>{{ p.reference }}</td><td class="n">{{ p.amount|mru }}</td></tr>{% endfor %}</table></div>{% endif %}
+{% endwith %}
+{% endblock %}

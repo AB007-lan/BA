@@ -1,0 +1,4 @@
+{% if is_paginated %}<p class="row" style="justify-content:center;margin-top:12px">
+{% if page_obj.has_previous %}<a class="btn sm light" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}">← Précédent</a>{% endif %}
+<span class="muted">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+{% if page_obj.has_next %}<a class="btn sm light" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}">Suivant →</a>{% endif %}</p>{% endif %}

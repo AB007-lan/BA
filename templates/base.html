@@ -1,0 +1,25 @@
+{% load static %}<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Hissab{% endblock %} · Hissab</title><link rel="stylesheet" href="{% static 'css/app.css' %}"></head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="{% url 'dashboard' %}"><i><b style="height:8px"></b><b style="height:13px"></b><b style="height:18px"></b></i>Hissab</a>
+  {% if request.org %}
+  {% with u=request.resolver_match.url_name|default:'' %}
+  <nav class="menu">
+    <a href="{% url 'dashboard' %}" {% if u == 'dashboard' %}class="on"{% endif %}>Tableau de bord</a>
+    <a href="{% url 'sale_list' %}" {% if 'sale' in u or 'expense' in u or 'closing' in u or 'cashmovement' in u %}class="on"{% endif %}>Caisse</a>
+    <a href="{% url 'invoice_list' %}" {% if 'invoice' in u or 'customer' in u or 'payment' in u %}class="on"{% endif %}>Facturation</a>
+    <a href="{% url 'product_list' %}" {% if 'product' in u or u == 'movement_list' or u == 'movement_create' %}class="on"{% endif %}>Stock</a>
+    {% if request.is_owner %}<a href="{% url 'org_settings' %}" {% if u == 'org_settings' or u == 'team' %}class="on"{% endif %}>Paramètres</a>{% endif %}
+  </nav>
+  {% endwith %}
+  <span class="org">{{ request.org.name }} · {{ user.username }}</span>
+  <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn sm light">Déconnexion</button></form>
+  {% endif %}
+</div></header>
+<main class="wrap">
+  {% if messages %}<ul class="msgs">{% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}</ul>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body></html>

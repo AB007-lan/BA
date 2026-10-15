@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Connexion{% endblock %}
+{% block content %}
+<div class="auth card"><h1>Connexion</h1>
+<form method="post" class="f">{% csrf_token %}{{ form.as_p }}<button class="btn">Se connecter</button></form>
+<p class="muted">Pas encore de compte ? <a href="{% url 'signup' %}">Créer mon entreprise</a></p></div>
+{% endblock %}
